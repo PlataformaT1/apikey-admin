@@ -54,9 +54,11 @@ jobs:
           maven-version: '3.8.7'
 
       - name: Generate Maven Wrapper
+        working-directory: ./apikey
         run: mvn wrapper:wrapper
 
       - name: Run tests
+        working-directory: ./apikey
         run: ./mvnw test
 
   build:
@@ -101,6 +103,7 @@ jobs:
 
       # Build with Maven (Quarkus)
       - name: Build with Maven
+        working-directory: ./apikey
         run: |
           mvn package \
             -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }} \
@@ -113,6 +116,7 @@ jobs:
 
       # Deploy to AWS Lambda
       - name: Deploy to AWS Lambda
+        working-directory: ./apikey
         run: |
           mvn package quarkus:deploy \
             -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }}
