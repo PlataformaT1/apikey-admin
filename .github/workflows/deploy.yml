@@ -112,11 +112,11 @@ jobs:
             -Dquarkus.lambda.subnet-ids="${{ vars.SUBNET_IDS }}" \
             -Dquarkus.lambda.security-group-ids="${{ vars.SECURITY_GROUP_IDS }}" \
             -Dquarkus.lambda.aws-region="${{ vars.AWS_REGION }}" \
-            -Dquarkus.lambda.aws-stage="${{ vars.STAGE_NAME }}"
+            -Dquarkus.lambda.aws-stage="${{ vars.STAGE_NAME }}" \
+            -Dquarkus.kubernetes.deploy=false
 
-      # Deploy to AWS Lambda
+      # Deploy to AWS Lambda - CORREGIDO para usar directamente la extensión de AWS Lambda
       - name: Deploy to AWS Lambda
         working-directory: ./apikey
         run: |
-          mvn package quarkus:deploy \
-            -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }}
+          mvn package -Dquarkus.kubernetes.deploy=false -Dquarkus.lambda.deployment=true
