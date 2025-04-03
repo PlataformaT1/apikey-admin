@@ -114,5 +114,5 @@ jobs:
       # Deploy to AWS Lambda
       - name: Deploy to AWS Lambda
         run: |
-          ./mvnw quarkus:deploy \
-            -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }} \
+          mvn package quarkus:deploy \
+            -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }}
