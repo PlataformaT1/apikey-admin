@@ -27,8 +27,10 @@ public class DeployApp {
                                 // want to deploy the stack to.
                                 */
                                   .env(Environment.builder()
-                                  .account("888577062296")
-                                  .region("us-east-1")
+                                  //.account("888577062296")
+                                  //.region("us-east-1")
+                                  .account(System.getenv("AWS_ACCOUNT_ID"))
+                                  .region(System.getenv("AWS_REGION"))
                                   .build())
 
 

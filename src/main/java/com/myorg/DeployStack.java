@@ -31,17 +31,20 @@ public class DeployStack extends Stack {
 
 				// Buscar una VPC existente
 				IVpc vpc = Vpc.fromLookup(this, "ExistingVpc", VpcLookupOptions.builder()
-								.vpcId("vpc-06d959fa883f7099f") // Reemplaza con el ID de tu VPC específica
+								//.vpcId("vpc-06d959fa883f7099f") // Reemplaza con el ID de tu VPC específica
+								.vpcId(System.getenv("VPC_ID"))
 								.build());
 
 				// Especificar una Subnet específica por ID
 				SubnetSelection subnetSelection = SubnetSelection.builder()
-								.subnets(List.of(Subnet.fromSubnetId(this, "LambdaPrivateSubnet", "subnet-048e1b539693ca677"))) // Reemplaza con tu Subnet ID
+								//.subnets(List.of(Subnet.fromSubnetId(this, "LambdaPrivateSubnet", "subnet-048e1b539693ca677"))) // Reemplaza con tu Subnet ID
+						.subnets(List.of(Subnet.fromSubnetId(this, "LambdaPrivateSubnet", System.getenv("SUBNET_IDS"))))
 								.build();
 
-        // Definir un Security Group específico
-        ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, "Default", "sg-069a39550d6ce94b2"); // Reemplaza con tu Security Group ID
-				
+				// Definir un Security Group específico
+				//ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, "Default", "sg-069a39550d6ce94b2"); // Reemplaza con tu Security Group ID
+				ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, "Default", System.getenv("SECURITY_GROUP_IDS"));
+
 				String absolutePath = Paths.get("../apikey-admin/apikey/target/function.zip").toAbsolutePath().toString();
 				
 				// Crear una Lambda en la VPC y Subnet especificada
@@ -53,9 +56,8 @@ public class DeployStack extends Stack {
 								.vpcSubnets(subnetSelection) // Definir la Subnet específica para la Lambda
                 .securityGroups(List.of(securityGroup)) // Asignar el Security Group
 								.code(Code.fromAsset(absolutePath)) // Ruta al archivo ZIP de tu Lambda
-								.environment(Map.of(
-												"APP_DB_MONGO_URI", "mongodb://t1pnonpci:qK!X5oNqP0b2@t1pnonpcidocumentdbcluster-f6py01dyecc7.cluster-ckh5zkjba5nq.us-east-1.docdb.amazonaws.com:27017/?replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"
-								))
+								//.environment(Map.of("APP_DB_MONGO_URI", "mongodb://t1pnonpci:qK!X5oNqP0b2@t1pnonpcidocumentdbcluster-f6py01dyecc7.cluster-ckh5zkjba5nq.us-east-1.docdb.amazonaws.com:27017/?replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false"))
+								.environment(Map.of("APP_DB_MONGO_URI", System.getenv("MONGODB_CONNECTION_STRING")))
 								.allowPublicSubnet(true)
 								.build();
 
@@ -63,7 +65,8 @@ public class DeployStack extends Stack {
 				LambdaRestApi api = LambdaRestApi.Builder.create(this, "ApiKeyAdminGateway")
 								.handler(lambdaFunction)
 								.deployOptions(StageOptions.builder()
-												.stageName("prod")
+												//.stageName("prod")
+												.stageName(System.getenv("STAGE_NAME"))
 												.build())
 								.build();
 		}
