@@ -108,7 +108,7 @@ jobs:
             -Dquarkus.lambda.vpc-id="${{ vars.VPC_ID }}" \
             -Dquarkus.lambda.subnet-ids="${{ vars.SUBNET_IDS }}" \
             -Dquarkus.lambda.security-group-ids="${{ vars.SECURITY_GROUP_IDS }}" \
-            -Dquarkus.lambda.aws-region="${{ vars.AWS_REGION }}"
+            -Dquarkus.lambda.aws-region="${{ vars.AWS_REGION }}" \
             -Dquarkus.lambda.aws-stage="${{ vars.STAGE_NAME }}"
 
       # Deploy to AWS Lambda
