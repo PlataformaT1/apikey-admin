@@ -48,6 +48,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: '3.8.7'
+
+      - name: Generate Maven Wrapper
+        run: mvn wrapper:wrapper
+
       - name: Run tests
         run: ./mvnw test
 
@@ -94,14 +102,14 @@ jobs:
       # Build with Maven (Quarkus)
       - name: Build with Maven
         run: |
-          ./mvnw package -Pnative \
+          mvn package \
             -Dquarkus.profile=${{ needs.determine-environment.outputs.environment }} \
-            -Dquarkus.mongodb.connection-string=${{ secrets.MONGODB_CONNECTION_STRING }} \
-            -Dquarkus.lambda.vpc-id=${{ vars.VPC_ID }} \
-            -Dquarkus.lambda.subnet-ids=${{ vars.SUBNET_IDS }} \
-            -Dquarkus.lambda.security-group-ids=${{ vars.SECURITY_GROUP_IDS }} \
-            -Dquarkus.lambda.aws-region=${{ vars.AWS_REGION }}
-            -Dquarkus.lambda.aws-stage=${{ vars.STAGE_NAME }}
+            -Dquarkus.mongodb.connection-string="${{ secrets.MONGODB_CONNECTION_STRING }}" \
+            -Dquarkus.lambda.vpc-id="${{ vars.VPC_ID }}" \
+            -Dquarkus.lambda.subnet-ids="${{ vars.SUBNET_IDS }}" \
+            -Dquarkus.lambda.security-group-ids="${{ vars.SECURITY_GROUP_IDS }}" \
+            -Dquarkus.lambda.aws-region="${{ vars.AWS_REGION }}"
+            -Dquarkus.lambda.aws-stage="${{ vars.STAGE_NAME }}"
 
       # Deploy to AWS Lambda
       - name: Deploy to AWS Lambda
