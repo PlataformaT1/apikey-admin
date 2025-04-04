@@ -76,9 +76,8 @@ public class ApiKeyController {
 
     @GET
     @Path("/hello")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response hello() {
-
-        return Response.ok("{hello:'hello world'}").build();
+    @Produces(MediaType.TEXT_PLAIN)
+    public String hello() {
+        return "Hello RESTEasy";
     }
 }
