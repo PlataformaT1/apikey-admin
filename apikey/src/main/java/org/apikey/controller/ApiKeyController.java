@@ -73,4 +73,12 @@ public class ApiKeyController {
         apiKeyService.deleteApiKey(id);
         return Response.ok().build();
     }
+
+    @GET
+    @Path("/hello")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response hello() {
+
+        return Response.ok("hello world").build();
+    }
 }
