@@ -79,6 +79,6 @@ public class ApiKeyController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response hello() {
 
-        return Response.ok("hello world").build();
+        return Response.ok("{hello:'hello world'}").build();
     }
 }
