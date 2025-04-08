@@ -5,39 +5,61 @@ import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.StackProps;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DeployApp {
         public static void main(final String[] args) {
                 App app = new App();
 
-                new DeployStack(app, "ApiKeyDeployStack", StackProps.builder()
-                                // If you don't specify 'env', this stack will be environment-agnostic.
-                                // Account/Region-dependent features and context lookups will not work,
-                                // but a single synthesized template can be deployed anywhere.
+                // Obtener variables de entorno
+                String environment = getEnvOrDefault("ENVIRONMENT", "development");
+                String awsAccount = getEnvOrDefault("AWS_ACCOUNT_ID", "");
+                String awsRegion = getEnvOrDefault("AWS_REGION", "us-east-1");
 
-                                // Uncomment the next block to specialize this stack for the AWS Account
-                                // and Region that are implied by the current CLI configuration.
+                // Crear un mapa con todas las variables de configuración
+                Map<String, String> contextMap = new HashMap<>();
+                contextMap.put("environment", environment);
+                contextMap.put("mongodbConnectionString", getEnvOrDefault("MONGODB_CONNECTION_STRING", ""));
+                contextMap.put("vpcId", getEnvOrDefault("VPC_ID", ""));
+                contextMap.put("subnetIds", getEnvOrDefault("SUBNET_IDS", ""));
+                contextMap.put("securityGroupIds", getEnvOrDefault("SECURITY_GROUP_IDS", ""));
+                contextMap.put("awsRegion", awsRegion);
+                contextMap.put("stageName", getEnvOrDefault("STAGE_NAME", "dev"));
+                contextMap.put("lambdaFunctionName", getEnvOrDefault("LAMBDA_FUNCTION_NAME", "apikey-admin-" + environment));
 
-                              /*  .env(Environment.builder()
-                                                .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                                                .region(System.getenv("CDK_DEFAULT_REGION"))
-                                                .build())
+                // Configurar el entorno AWS
+                Environment awsEnvironment = Environment.builder()
+                        .account(awsAccount.isEmpty() ? null : awsAccount)
+                        .region(awsRegion)
+                        .build();
 
-                                // Uncomment the next block if you know exactly what Account and Region you
-                                // want to deploy the stack to.
-                                */
-                                  .env(Environment.builder()
-                                  //.account("888577062296")
-                                  //.region("us-east-1")
-                                  .account(System.getenv("AWS_ACCOUNT_ID"))
-                                  .region(System.getenv("AWS_REGION"))
-                                  .build())
+                // Propiedades del stack
+                StackProps stackProps = StackProps.builder()
+                        .env(awsEnvironment)
+                        .build();
 
-
-                                // For more information, see
-                                // https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-                                .build());
+                // Crear el stack principal
+                String stackName = "ApiKeyAdmin" + (environment.equals("production") ? "Prod" : "Dev");
+                new DeployStack(app, stackName, stackProps, contextMap);
 
                 app.synth();
+        }
+        /**
+         * Obtiene una variable de entorno o devuelve un valor predeterminado si no existe
+         */
+        private static String getEnvOrDefault(String key, String defaultValue) {
+                String value = System.getenv(key);
+                if (value == null || value.isEmpty()) {
+                        System.out.println("Variable de entorno " + key + " no encontrada, usando valor predeterminado: " + defaultValue);
+                        return defaultValue;
+                }
+                // No imprimir valores confidenciales como cadenas de conexión
+                if (key.contains("CONNECTION_STRING") || key.contains("PASSWORD") || key.contains("SECRET")) {
+                        System.out.println("Variable de entorno " + key + " encontrada [valor oculto]");
+                } else {
+                        System.out.println("Variable de entorno " + key + " encontrada: " + value);
+                }
+                return value;
         }
 }
