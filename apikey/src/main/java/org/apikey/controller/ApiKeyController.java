@@ -36,7 +36,7 @@ public class ApiKeyController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postApiKey(final ApiKey apikey) {
-
+        System.out.printl(apikey);
         return Response.ok(apiKeyService.createApiKey(apikey)).build();
     }
 
@@ -73,11 +73,5 @@ public class ApiKeyController {
         apiKeyService.deleteApiKey(id);
         return Response.ok().build();
     }
-
-    @GET
-    @Path("/hello")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "Hello RESTEasy";
-    }
+    
 }
