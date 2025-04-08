@@ -65,8 +65,10 @@ public class DeployStack extends Stack {
 		// Crear una Lambda en la VPC y Subnet especificada
 		Function lambdaFunction = Function.Builder.create(this, "ApiKeyAdmin")
 				.functionName("ApiKeyAdmin")
-				.runtime(Runtime.PROVIDED_AL2023)
-				.handler("bootstrap")
+				//.runtime(Runtime.PROVIDED_AL2023)
+				//.handler("bootstrap")
+				.runtime(Runtime.JAVA_17)
+				.handler("io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest")
 				.vpc(vpc)
 				.vpcSubnets(subnetSelection)
 				.securityGroups(List.of(securityGroup))
