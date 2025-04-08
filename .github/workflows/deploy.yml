@@ -1,19 +1,48 @@
-
 name: Deploy to AWS
 
 on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  build-and-deploy:
+  determine-environment:
     runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Set environment based on branch
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "environment=development" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.environment }}" != "" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-deploy:
+    needs: determine-environment
+    runs-on: ubuntu-latest
+    environment: ${{ needs.determine-environment.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -46,6 +75,16 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
+      # Agregar un paso para mostrar qué variables se están utilizando (útil para depuración)
+      - name: Debug environment variables
+        run: |
+          echo "Using environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}"
+          echo "AWS_REGION: ${{ vars.AWS_REGION }}"
+          echo "VPC_ID: ${{ vars.VPC_ID }}"
+          echo "STAGE_NAME: ${{ vars.STAGE_NAME }}"
+          # No mostrar valores de secretos u otra información sensible
+
       # Actualizar o crear el archivo cdk.json con las variables de entorno necesarias
       - name: Create CDK configuration
         run: |
@@ -67,7 +106,8 @@ jobs:
               "SUBNET_IDS": "${{ vars.SUBNET_IDS }}",
               "SECURITY_GROUP_IDS": "${{ vars.SECURITY_GROUP_IDS }}",
               "STAGE_NAME": "${{ vars.STAGE_NAME }}",
-              "MONGODB_CONNECTION_STRING": "${{ secrets.MONGODB_CONNECTION_STRING }}"
+              "MONGODB_CONNECTION_STRING": "${{ secrets.MONGODB_CONNECTION_STRING }}",
+              "ENVIRONMENT": "${{ needs.determine-environment.outputs.environment }}"
             }
           }
           EOF
@@ -78,8 +118,17 @@ jobs:
           CDK_DEFAULT_ACCOUNT: ${{ vars.AWS_ACCOUNT_ID }}
           CDK_DEFAULT_REGION: ${{ vars.AWS_REGION }}
 
+      # Agregar un sufijo al stack según el entorno
       - name: CDK Deploy
-        run: cdk deploy --require-approval never
+        run: |
+          STACK_NAME="ApiKeyDeployStack-${{ needs.determine-environment.outputs.environment }}"
+          
+          # Si es producción, no usar sufijo para mantener compatibilidad con despliegues anteriores
+          if [[ "${{ needs.determine-environment.outputs.environment }}" == "production" ]]; then
+            STACK_NAME="ApiKeyDeployStack"
+          fi
+          
+          cdk deploy $STACK_NAME --require-approval never
         env:
           CDK_DEFAULT_ACCOUNT: ${{ vars.AWS_ACCOUNT_ID }}
           CDK_DEFAULT_REGION: ${{ vars.AWS_REGION }}
@@ -89,3 +138,4 @@ jobs:
           MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
           LOG_LEVEL: ${{ vars.LOG_LEVEL }}
           LOG_CHAN: ${{ vars.LOG_CHAN }}
+          ENVIRONMENT: ${{ needs.determine-environment.outputs.environment }}
