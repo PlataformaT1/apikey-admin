@@ -70,29 +70,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '16'  # Mantener Node.js 16 para compatibilidad con CDK v1
 
-      - name: Install AWS CDK
-        run: npm install -g aws-cdk
+      - name: Install specific CDK v1 version
+        run: npm install -g aws-cdk@1.204.0  # Ajusta a la versión específica de CDK v1 que estás usando
 
-      # Agregar un paso para mostrar qué variables se están utilizando (útil para depuración)
-      - name: Debug environment variables
-        run: |
-          echo "Using environment: ${{ needs.determine-environment.outputs.environment }}"
-          echo "AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}"
-          echo "AWS_REGION: ${{ vars.AWS_REGION }}"
-          echo "VPC_ID: ${{ vars.VPC_ID }}"
-          echo "STAGE_NAME: ${{ vars.STAGE_NAME }}"
-          # No mostrar valores de secretos u otra información sensible
-
-      # Actualizar o crear el archivo cdk.json con las variables de entorno necesarias
+      # Actualizar o crear el archivo cdk.json ajustado para CDK v1
       - name: Create CDK configuration
         run: |
           cat > cdk.json << EOF
           {
             "app": "mvn -e -q compile exec:java",
             "context": {
-              "@aws-cdk/core:enableStackNameDuplicates": "true",
+              "@aws-cdk/core:enableStackNameDuplicates": false,
               "aws-cdk:enableDiffNoFail": "true",
               "@aws-cdk/core:stackRelativeExports": "true",
               "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": true,
@@ -106,8 +96,7 @@ jobs:
               "SUBNET_IDS": "${{ vars.SUBNET_IDS }}",
               "SECURITY_GROUP_IDS": "${{ vars.SECURITY_GROUP_IDS }}",
               "STAGE_NAME": "${{ vars.STAGE_NAME }}",
-              "MONGODB_CONNECTION_STRING": "${{ secrets.MONGODB_CONNECTION_STRING }}",
-              "ENVIRONMENT": "${{ needs.determine-environment.outputs.environment }}"
+              "MONGODB_CONNECTION_STRING": "${{ secrets.MONGODB_CONNECTION_STRING }}"
             }
           }
           EOF
