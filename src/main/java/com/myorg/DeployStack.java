@@ -21,7 +21,6 @@ import java.util.HashMap;
 
 
 public class DeployStack extends Stack {
-
 	public DeployStack(final Construct scope, final String id, final StackProps props, final Map<String, String> context) {
 		super(scope, id, props);
 
@@ -86,12 +85,14 @@ public class DeployStack extends Stack {
 				.build();
 
 		// Definir variables de entorno para la función Lambda
+		// IMPORTANTE: No incluir AWS_REGION porque es una variable reservada
 		Map<String, String> environmentVars = new HashMap<>();
 		environmentVars.put("QUARKUS_PROFILE", environment);
 		if (mongodbConnectionString != null && !mongodbConnectionString.isEmpty()) {
 			environmentVars.put("MONGODB_CONNECTION_STRING", mongodbConnectionString);
 		}
-		environmentVars.put("AWS_REGION", awsRegion);
+		// Podemos incluir una variable personalizada para almacenar la región
+		environmentVars.put("CUSTOM_AWS_REGION", awsRegion);
 
 		// Configurar las propiedades de la función Lambda
 		FunctionProps.Builder functionPropsBuilder = FunctionProps.builder()
