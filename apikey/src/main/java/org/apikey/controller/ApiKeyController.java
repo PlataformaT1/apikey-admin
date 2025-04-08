@@ -36,7 +36,7 @@ public class ApiKeyController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postApiKey(final ApiKey apikey) {
-        System.out.printl(apikey);
+        System.out.println(apikey);
         return Response.ok(apiKeyService.createApiKey(apikey)).build();
     }
 
@@ -73,5 +73,5 @@ public class ApiKeyController {
         apiKeyService.deleteApiKey(id);
         return Response.ok().build();
     }
-    
+
 }
