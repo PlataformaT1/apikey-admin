@@ -40,7 +40,8 @@ public class DeployApp {
                         .build();
 
                 // Crear el stack principal
-                String stackName = "ApiKeyAdmin" + (environment.equals("production") ? "Prod" : "Dev");
+                //String stackName = "ApiKeyAdmin" + (environment.equals("production") ? "Prod" : "Dev");
+                String stackName = "ApiKeyDeployStack";
                 new DeployStack(app, stackName, stackProps, contextMap);
 
                 app.synth();

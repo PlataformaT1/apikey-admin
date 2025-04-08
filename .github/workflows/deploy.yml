@@ -145,7 +145,7 @@ jobs:
       - name: Deploy with CDK
         run: |
           echo "Desplegando con CDK para entorno: $ENVIRONMENT"
-          mvn -e compile exec:java -Dexec.args="deploy --require-approval=never"
+          mvn -e compile exec:java -Dexec.args="deploy --verbose --require-approval=never"
 
       # Verificar el despliegue
       - name: Verify Deployment
