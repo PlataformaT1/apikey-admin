@@ -4,7 +4,6 @@ import software.amazon.awscdk.services.apigateway.LambdaRestApi;
 import software.amazon.awscdk.services.apigateway.StageOptions;
 import software.amazon.awscdk.services.ec2.IVpc;
 import software.amazon.awscdk.services.ec2.SubnetSelection;
-import software.amazon.awscdk.services.ec2.SubnetType;
 import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.ec2.VpcLookupOptions;
 import software.amazon.awscdk.services.ec2.Subnet;
@@ -13,16 +12,15 @@ import software.amazon.awscdk.services.ec2.SecurityGroup;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.Code;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
+import software.constructs.Construct;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-import software.amazon.awscdk.Stack;
-import software.constructs.Construct;
-import software.amazon.awscdk.StackProps;
 import java.nio.file.Paths;
-import software.amazon.awscdk.App;
 
 
 public class DeployStack extends Stack {

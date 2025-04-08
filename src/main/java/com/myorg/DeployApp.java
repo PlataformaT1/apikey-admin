@@ -4,9 +4,6 @@ import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.StackProps;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
 
 public class DeployApp {
         public static void main(final String[] args) {
