@@ -102,12 +102,8 @@ jobs:
       # Agregar un sufijo al stack según el entorno
       - name: CDK Deploy
         run: |
-          STACK_NAME="ApiKeyDeployStack-${{ needs.determine-environment.outputs.environment }}"
+          STACK_NAME="ApiKeyDeployStack"
           
-          # Si es producción, no usar sufijo para mantener compatibilidad con despliegues anteriores
-          if [[ "${{ needs.determine-environment.outputs.environment }}" == "production" ]]; then
-            STACK_NAME="ApiKeyDeployStack"
-          fi
           
           cdk deploy $STACK_NAME --require-approval never
         env:
