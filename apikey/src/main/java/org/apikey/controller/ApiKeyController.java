@@ -16,9 +16,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
+
 
 @Path("/apikey")
 public class ApiKeyController {
+    private static final Logger LOG = Logger.getLogger(ApiKeyController.class);
 
     @Inject
     ApiKeyService apiKeyService;
@@ -28,7 +31,9 @@ public class ApiKeyController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getApiKey(@PathParam("clientId") String clientId, @PathParam("plataform") String plataform) {
-
+        LOG.debug("Inicio del método getApiKey");
+        LOG.debug("clientId:"+clientId);
+        LOG.debug("plataform:"+plataform);
         return Response.ok(apiKeyService.getApiKeyClient(clientId, plataform)).build();
     }
 
