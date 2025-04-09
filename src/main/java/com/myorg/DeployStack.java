@@ -1,5 +1,6 @@
 package com.myorg;
 
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.services.apigateway.LambdaRestApi;
 import software.amazon.awscdk.services.apigateway.StageOptions;
 import software.amazon.awscdk.services.ec2.IVpc;
@@ -37,6 +38,7 @@ public class DeployStack extends Stack {
 		String securityGroupIdsString = getEnvOrContext(scope, "SECURITY_GROUP_IDS");
 		String stageName = getEnvOrContext(scope, "STAGE_NAME", "prod");
 		String mongodbConnectionString = getEnvOrContext(scope, "MONGODB_CONNECTION_STRING");
+		System.out.println(mongodbConnectionString);
 		String logLevel = getEnvOrContext(scope, "LOG_LEVEL", "INFO");
 		String logChan = getEnvOrContext(scope, "LOG_CHAN", "app");
 
@@ -67,6 +69,8 @@ public class DeployStack extends Stack {
 				.functionName("ApiKeyAdmin")
 				//.runtime(Runtime.PROVIDED_AL2023)
 				//.handler("bootstrap")
+				.timeout(Duration.seconds(60))
+				.memorySize(512)
 				.runtime(Runtime.JAVA_17)
 				.handler("io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest")
 				.vpc(vpc)
