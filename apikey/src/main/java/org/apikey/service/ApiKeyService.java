@@ -36,7 +36,11 @@ public class ApiKeyService {
 
     public ApiKeyEntity createApiKey(final ApiKey apikey) {
 
-        ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getClientId());
+        // Configurar fechas con zona horaria de México
+        ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
+        ZonedDateTime expiresAt = now.plusHours(24);
+
+        ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getClientId(),now);
         if (existingApiKey != null) {
             return existingApiKey; // Retornar el token existente en lugar de crear uno nuevo
         }
@@ -59,9 +63,6 @@ public class ApiKeyService {
         apiKeyEntity.isActive = true;
         apiKeyEntity.requestCount = 0;
 
-        // Configurar fechas con zona horaria de México
-        ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
-        ZonedDateTime expiresAt = now.plusHours(24);
 
         // Corregido: Usar LocalDateTime en lugar de Date si eso es lo que espera la entidad
         apiKeyEntity.createdAt = LocalDateTime.ofInstant(now.toInstant(), MEXICO_ZONE);
@@ -80,11 +81,11 @@ public class ApiKeyService {
         apiKeyEntity.usageLimits = apikey.getUsageLimits();
         apiKeyEntity.platformData = apikey.getPlatformData();
         apiKeyEntity.isActive = apikey.getIsActive();
+
+        ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
+        ZonedDateTime expiresAt = now.plusHours(24);
         // Corregido: Convertir Date a LocalDateTime si es necesario
-        if (apikey.getExpiredAt() != null) {
-            apiKeyEntity.expiredAt = LocalDateTime.ofInstant(
-                    apikey.getExpiredAt().toInstant(), MEXICO_ZONE);
-        }
+        apiKeyEntity.expiredAt = LocalDateTime.ofInstant(expiresAt.toInstant(), MEXICO_ZONE);
 
         return apiKeyRepository.updateApiKey(apiKeyEntity);
     }

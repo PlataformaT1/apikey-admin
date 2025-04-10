@@ -87,4 +87,27 @@ public class ApiKeyRepository {
         }
         return apiKeyEntity;
     }
+
+    public ApiKeyEntity findActiveApiKeyBySellerId(String seller_id, LocalDateTime now) {
+        // Crear un filtro compuesto con tres condiciones:
+        // 1. Que el clientId sea igual al sellerId proporcionado
+        // 2. Que la API key esté activa
+        // 3. Que la fecha de expiración sea mayor que la fecha actual
+        Bson filter = Filters.and(
+                Filters.eq("clientId", seller_id),
+                Filters.eq("isActive", true),
+                Filters.gt("expiredAt", now)  // Esto verifica que no haya expirado
+        );
+
+        // Buscar la primera API key que cumpla con todas las condiciones
+        ApiKeyEntity apiKeyEntity = getCollection().find(filter).first();
+
+        // Si no se encuentra, retornar null en lugar de lanzar una excepción
+        // Ya que es un caso válido que un seller no tenga tokens activos
+        if (apiKeyEntity == null) {
+            return null;
+        }
+
+        return apiKeyEntity;
+    }
 }
