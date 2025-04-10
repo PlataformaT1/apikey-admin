@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ApiKeyService {
+    private static final ZoneId MEXICO_ZONE = ZoneId.of("America/Mexico_City");
 
     @Inject
     ApiKeyRepository apiKeyRepository;
@@ -36,7 +37,7 @@ public class ApiKeyService {
 
     public ApiKeyEntity createApiKey(final ApiKey apikey) {
 
-        ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getSellerId());
+        ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getClientId());
         if (existingApiKey != null) {
             return existingApiKey; // Retornar el token existente en lugar de crear uno nuevo
         }
@@ -64,8 +65,8 @@ public class ApiKeyService {
         ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
         ZonedDateTime expiresAt = now.plusHours(24);
         // Convertir a Date para MongoDB (que internamente lo almacena como ISODate)
-        apiKeyEntity.createdAt(Date.from(now.toInstant()));
-        apiKeyEntity.expiredAt(Date.from(expiresAt.toInstant()));
+        apiKeyEntity.createdAt = Date.from(now.toInstant());
+        apiKeyEntity.expiredAt = Date.from(expiresAt.toInstant());
         //apiKeyEntity.createdAt = LocalDateTime.now().withNano(0);
         //apiKeyEntity.expiredAt = apikey.getExpiredAt();
 
@@ -122,9 +123,9 @@ public class ApiKeyService {
                 sellerId, now).firstResult();
     }
 
-    public ApiKey refreshApiKeyBySellerId(String sellerId) {
+    public ApiKeyEntity refreshApiKeyBySellerId(String sellerId) {
         // Buscar API key activa para el sellerId
-        ApiKey existingKey = findActiveBySellerId(sellerId);
+        ApiKeyEntity existingKey = findActiveBySellerId(sellerId);
 
         // Verificar si existe
         if (existingKey == null) {

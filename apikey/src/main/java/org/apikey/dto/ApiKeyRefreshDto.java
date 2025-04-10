@@ -1,7 +1,9 @@
 package org.apikey.dto;
 
 import java.util.Date;
+import lombok.Data;
 
+@Data
 public class ApiKeyRefreshDto {
     private String apiKey;
     private String clientId;
