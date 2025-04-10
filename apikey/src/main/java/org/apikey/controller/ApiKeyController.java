@@ -79,4 +79,60 @@ public class ApiKeyController {
         return Response.ok().build();
     }
 
+    @PUT
+    @Path("/refresh")
+    @Operation(
+            summary = "Regenerar API key",
+            description = "Genera una nueva API key y extiende su validez por 24 horas desde la zona horaria de México"
+    )
+    @APIResponses(value = {
+            @APIResponse(
+                    responseCode = "200",
+                    description = "API key regenerada exitosamente con nuevo valor",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ApiKeyRefreshDto.class))
+            ),
+            @APIResponse(
+                    responseCode = "400",
+                    description = "API key no encontrada, inactiva o expirada"
+            ),
+            @APIResponse(
+                    responseCode = "401",
+                    description = "Header de autorización inválido"
+            )
+    })
+
+    @PUT
+    @Path("/refresh/seller/{sellerId}")
+    @Operation(
+            summary = "Regenerar API key por Seller ID",
+            description = "Genera una nueva API key para el Seller ID especificado"
+    )
+    @APIResponses(value = {
+            @APIResponse(
+                    responseCode = "200",
+                    description = "API key regenerada exitosamente con nuevo valor",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ApiKeyRefreshDto.class))
+            ),
+            @APIResponse(
+                    responseCode = "400",
+                    description = "No se encontró una API key activa para el Seller ID proporcionado"
+            )
+    })
+    public Response refreshApiKeyBySellerId(
+            @PathParam("sellerId")
+            @Parameter(description = "ID del vendedor", required = true)
+            String sellerId) {
+
+        ApiKeyRefreshDto refreshResult = apiKeyService.refreshApiKeyBySellerIdAndGetInfo(sellerId);
+
+        if (!refreshResult.getSuccess()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(refreshResult)
+                    .build();
+        }
+
+        return Response.ok(refreshResult).build();
+    }
 }

@@ -15,16 +15,11 @@ public class ApiKey {
     private String clientId;
     private String apiKey;
     private String platform;
-
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
-
     private Boolean isActive;
-
     private Integer requestCount;
-
     private Map<String, Object> platformData;
-
     private UsageLimits usageLimits;
 
 }
