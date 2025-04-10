@@ -122,7 +122,7 @@ public class ApiKeyController {
     })
     public Response refreshApiKeyBySellerId(
             @PathParam("sellerId")
-            @Parameter(description = "ID del vendedor", required = true)
+            //@Parameter(description = "ID del vendedor", required = true)
             String sellerId) {
 
         ApiKeyRefreshDto refreshResult = apiKeyService.refreshApiKeyBySellerIdAndGetInfo(sellerId);
