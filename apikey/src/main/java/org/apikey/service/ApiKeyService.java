@@ -36,7 +36,7 @@ public class ApiKeyService {
 
     public ApiKeyEntity createApiKey(final ApiKey apikey) {
 
-        ApiKey existingApiKey = findActiveBySellerId(apiKey.getSellerId());
+        ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getSellerId());
         if (existingApiKey != null) {
             return existingApiKey; // Retornar el token existente en lugar de crear uno nuevo
         }
@@ -113,7 +113,7 @@ public class ApiKeyService {
         return apiKeyRepository.findApiKeyById(id);
     }
 
-    public ApiKey findActiveBySellerId(String sellerId) {
+    public ApiKeyEntity findActiveBySellerId(String sellerId) {
         // Buscar ApiKey activa por sellerId que no haya expirado
         // Usar la fecha actual en zona horaria de México
         Date now = Date.from(ZonedDateTime.now(MEXICO_ZONE).toInstant());

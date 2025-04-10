@@ -3,6 +3,7 @@ package org.apikey.controller;
 import org.apikey.model.ApiKey;
 import org.apikey.service.ApiKeyService;
 import org.apikey.entity.ApiKeyEntity;
+import org.apikey.dto.ApiKeyRefreshDto;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
