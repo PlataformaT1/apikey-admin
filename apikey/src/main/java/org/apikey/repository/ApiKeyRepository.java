@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import org.apikey.entity.ApiKeyEntity;
 import org.bson.Document;
@@ -89,7 +90,7 @@ public class ApiKeyRepository {
         return apiKeyEntity;
     }
 
-    public ApiKeyEntity findActiveApiKeyBySellerId(String seller_id, LocalDateTime now) {
+    public ApiKeyEntity findActiveApiKeyBySellerId(String seller_id, Date now) {
         // Crear un filtro compuesto con tres condiciones:
         // 1. Que el clientId sea igual al sellerId proporcionado
         // 2. Que la API key esté activa
@@ -97,7 +98,7 @@ public class ApiKeyRepository {
         Bson filter = Filters.and(
                 Filters.eq("clientId", seller_id),
                 Filters.eq("isActive", true),
-                Filters.gt("expiredAt", now)  // Esto verifica que no haya expirado
+                Filters.gt("expiredAtLocalized", now)  // Esto verifica que no haya expirado
         );
 
         // Buscar la primera API key que cumpla con todas las condiciones

@@ -23,6 +23,10 @@ public class ApiKeyEntity {
     public String platform;
     public LocalDateTime createdAt;
     public LocalDateTime expiredAt;
+    public LocalDateTime updatedAt;
+    public Date createdAtLocalized;
+    public Date expiredAtLocalized;
+    public Date updatedAtLocalized;
     public Boolean isActive;
     public Integer requestCount;
     public Map<String, Object> platformData;
