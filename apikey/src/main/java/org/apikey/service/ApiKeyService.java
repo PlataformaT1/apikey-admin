@@ -187,8 +187,8 @@ public class ApiKeyService {
         existingKey.expiredAt = expiresAt;
         existingKey.updatedAt = now;
 
-        existingKey.expiredAtLocalized = expiresZoned;
-        existingKey.updatedAtLocalized = nowZoned;
+        existingKey.expiredAtLocalized = expiresAtDzoned;
+        existingKey.updatedAtLocalized = nowDzoned;
 
         // Guardar y retornar
         return apiKeyRepository.updateApiKey(existingKey);
