@@ -37,8 +37,8 @@ public class ApiKeyService {
     public ApiKeyEntity createApiKey(final ApiKey apikey) {
 
         // Configurar fechas con zona horaria de México
-        ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
-        ZonedDateTime expiresAt = now.plusHours(24);
+        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
+        LocalDateTime expiresAt = now.plusHours(24);
 
         ApiKeyEntity existingApiKey = findActiveBySellerId(apikey.getClientId(),now);
         if (existingApiKey != null) {
@@ -65,8 +65,8 @@ public class ApiKeyService {
 
 
         // Corregido: Usar LocalDateTime en lugar de Date si eso es lo que espera la entidad
-        apiKeyEntity.createdAt = LocalDateTime.ofInstant(now.toInstant(), MEXICO_ZONE);
-        apiKeyEntity.expiredAt = LocalDateTime.ofInstant(expiresAt.toInstant(), MEXICO_ZONE);
+        apiKeyEntity.createdAt = now;
+        apiKeyEntity.expiredAt = expiresAt;
 
         return apiKeyRepository.saveApiKey(apiKeyEntity);
     }
@@ -82,10 +82,11 @@ public class ApiKeyService {
         apiKeyEntity.platformData = apikey.getPlatformData();
         apiKeyEntity.isActive = apikey.getIsActive();
 
-        ZonedDateTime now = ZonedDateTime.now(MEXICO_ZONE);
-        ZonedDateTime expiresAt = now.plusHours(24);
-        // Corregido: Convertir Date a LocalDateTime si es necesario
-        apiKeyEntity.expiredAt = LocalDateTime.ofInstant(expiresAt.toInstant(), MEXICO_ZONE);
+        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
+        LocalDateTime expiresAt = now.plusHours(24);
+
+        apiKeyEntity.createdAt = now;
+        apiKeyEntity.expiredAt = expiresAt;
 
         return apiKeyRepository.updateApiKey(apiKeyEntity);
     }
@@ -116,10 +117,8 @@ public class ApiKeyService {
         return apiKeyRepository.findApiKeyById(id);
     }
 
-    public ApiKeyEntity findActiveBySellerId(String sellerId) {
+    public ApiKeyEntity findActiveBySellerId(String sellerId,LocalDateTime now) {
         // Buscar ApiKey activa por sellerId que no haya expirado
-        // Convertir Date a LocalDateTime para la comparación
-        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
 
         // Corregido: Usar el método correcto de búsqueda del repositorio
         return apiKeyRepository.findActiveApiKeyBySellerId(sellerId, now);
@@ -144,9 +143,11 @@ public class ApiKeyService {
         // Actualizar API key con nuevo valor y fechas
         existingKey.apiKey = apiKeyBuilder.toString();
 
+        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
+        LocalDateTime expiresAt = now.plusHours(24);
         // Configurar fechas con zona horaria de México
-        ZonedDateTime expiresAt = ZonedDateTime.now(MEXICO_ZONE).plusHours(24);
-        existingKey.expiredAt = LocalDateTime.ofInstant(expiresAt.toInstant(), MEXICO_ZONE);
+        existingKey.createdAt = now;
+        existingKey.expiredAt = expiresAt;
 
         // Si existe un campo updatedAt, también actualizarlo
         // existingKey.updatedAt = LocalDateTime.now(MEXICO_ZONE);
