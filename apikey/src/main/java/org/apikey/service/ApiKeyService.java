@@ -68,7 +68,7 @@ public class ApiKeyService {
         apiKeyEntity.platform = apikey.getPlatform();
         apiKeyEntity.usageLimits = apikey.getUsageLimits();
         apiKeyEntity.platformData = apikey.getPlatformData();
-        apiKeyEntity.isActive = true;
+        apiKeyEntity.isActive = true;2025-04-10T18:21:05.042Z
         apiKeyEntity.requestCount = 0;
 
 
@@ -78,8 +78,8 @@ public class ApiKeyService {
         apiKeyEntity.updatedAt = now;
         // agregamos fechas Localizadas
         apiKeyEntity.createdAtLocalized = nowDzoned;
-        apiKeyEntity.createdAtLocalized = expiresAtDzoned;
-        apiKeyEntity.createdAtLocalized = nowDzoned;
+        apiKeyEntity.expiredAtLocalized = expiresAtDzoned;
+        apiKeyEntity.updatedAtLocalized = nowDzoned;
 
         return apiKeyRepository.saveApiKey(apiKeyEntity);
     }
@@ -109,8 +109,8 @@ public class ApiKeyService {
         apiKeyEntity.expiredAt = expiresAt;
         apiKeyEntity.updatedAt = now;
 
-        apiKeyEntity.createdAtLocalized = expiresAtDzoned;
-        apiKeyEntity.createdAtLocalized = nowDzoned;
+        apiKeyEntity.expiredAtLocalized = expiresAtDzoned;
+        apiKeyEntity.updatedAtLocalized = nowDzoned;
 
         return apiKeyRepository.updateApiKey(apiKeyEntity);
     }
