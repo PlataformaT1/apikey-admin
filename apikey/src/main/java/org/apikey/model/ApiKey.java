@@ -2,6 +2,7 @@ package org.apikey.model;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Date;
 
 import org.bson.types.ObjectId;
 
