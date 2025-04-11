@@ -131,8 +131,8 @@ public class ApiKeyService {
         LocalDateTime now = LocalDateTime.now();
         ZonedDateTime nowZoned = ZonedDateTime.now(MEXICO_ZONE);
         Date nowDzoned = Date.from(nowZoned.toInstant());
-        updateFields.updatedAt = now;
-        updateFields.updatedAtLocalized = nowZoned;
+        updateFields.put("updatedAt", now);
+        updateFields.put("updatedAtLocalized" , nowZoned);
         return apiKeyRepository.patchApiKey(id, updateFields);
 
     }
