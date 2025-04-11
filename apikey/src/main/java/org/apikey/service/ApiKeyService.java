@@ -125,8 +125,10 @@ public class ApiKeyService {
     }
 
     public ApiKeyEntity refreshApiKeyBySellerId(String sellerId) {
+        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
+        LocalDateTime expiresAt = now.plusHours(24);
         // Buscar API key activa para el sellerId
-        ApiKeyEntity existingKey = findActiveBySellerId(sellerId);
+        ApiKeyEntity existingKey = findActiveBySellerId(sellerId,now);
 
         // Verificar si existe
         if (existingKey == null) {
@@ -142,9 +144,7 @@ public class ApiKeyService {
 
         // Actualizar API key con nuevo valor y fechas
         existingKey.apiKey = apiKeyBuilder.toString();
-
-        LocalDateTime now = LocalDateTime.now(MEXICO_ZONE);
-        LocalDateTime expiresAt = now.plusHours(24);
+        
         // Configurar fechas con zona horaria de México
         existingKey.createdAt = now;
         existingKey.expiredAt = expiresAt;
